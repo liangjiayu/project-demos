@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <title>Tabs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .navbar {
+            display: block;
+            width: 100%;
+            height: 50px;
+            background: orangered;
+        }
+
+        .navbar.active {
+            z-index: 100;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="height: 100px;"></div>
+    <div class="navbar-wrap">
+        <div class="navbar"></div>
+    </div>
+    <div style="height: 1500px;">4646456456456</div>
+    <script>
+        $(function () {
+            class sticky {
+                /**
+                 * Creates an instance of sticky.
+                 * @param {string} 固定元素 jq 
+                 * @param {number} 偏移
+                 */
+                constructor(el, top = 0) {
+                    this.$el = $(el)
+                    this.top = top
+                    this.getWrap()
+                    this.isFixed()
+                    this.bindEvent()
+                }
+                getWrap() {
+                    let height = this.$el.height()
+                    this.$el.parent().height(height)
+                }
+                isFixed() {
+                    let winTop = window.scrollY
+                    if (winTop > this.top) {
+                        this.$el.addClass('active')
+                    } else {
+                        this.$el.removeClass('active')
+                    }
+                }
+                bindEvent() {
+                    let self = this
+                    $(window).on('scroll', function () {
+                        self.isFixed()
+                    })
+                }
+            }
+
+            new sticky('.navbar', 100)
+        })
+    </script>
+</body>
+
+</html>
