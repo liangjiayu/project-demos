@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <title>Tabs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .gotop {
+            display: none;
+            cursor: pointer;
+            position: fixed;
+            right: 40px;
+            bottom: 40px;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            background: #fff;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, .2);
+            border-radius: 50%;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .gotop.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="height: 1500px;"></div>
+    <div class="gotop">TOP</div>
+    <script>
+        $(function () {
+
+            class GoTop {
+                /**
+                 * Creates an instance of GoTop.
+                 * @param {string} 元素
+                 * @param {number} 出现的距离
+                 * @param {number} 返回头部的速度 
+                 */
+                constructor(el, topValue = 300, speed = 400) {
+                    this.$el = $(el)
+                    this.timer = null
+                    this.topValue = topValue
+                    this.speed = speed
+                    this.init()
+                    this.bindEvent()
+                }
+                init() {
+                    let self = this
+                    this.$el.on('click', function () {
+                        $('body,html').stop().animate({
+                            scrollTop: 0,
+                        }, self.speed)
+                    })
+                }
+                bindEvent() {
+                    let self = this
+                    $(window).on('scroll', function () {
+                        if (self.timer !== null) {
+                            clearTimeout(self.timer);
+                        }
+                        self.timer = setTimeout(() => {
+                            let winTop = window.scrollY;
+                            if (winTop > self.topValue) {
+                                self.$el.addClass('active');
+                            } else {
+                                self.$el.removeClass('active');
+                            }
+                        }, 100);
+                    })
+                }
+            }
+            let gotop = new GoTop('.gotop',100)
+        })
+    </script>
+</body>
+
+</html>
