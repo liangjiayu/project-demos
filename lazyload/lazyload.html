@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <title>Tabs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        img {
+            vertical-align: top;
+        }
+
+        .lazyload-box {
+            max-width: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .lazyload-box .item {
+            float: left;
+            width: 50%;
+        }
+
+        .lazy-img {
+            width: 100%;
+            height: 225px;
+            background: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lazyload-box">
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/1.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/2.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/3.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/4.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/5.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/6.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/7.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/8.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/9.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/10.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/11.jpg"
+                alt="">
+        </div>
+        <div class="item">
+            <img class="lazy-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="http://cdn.jirengu.com/book.jirengu.com/img/12.jpg"
+                alt="">
+        </div>
+    </div>
+    <script>
+        $(function () {
+            // 要给懒加载的图片加 类名 src 和 data-src
+            class LazyLoad {
+                constructor(el) {
+                    this.$img = $('.lazy-img')
+                    this.timer = null
+                    this.lazyImg()
+                    this.bindEvent()
+                }
+                lazyImg() {
+                    let pos = $(window).height() + $(window).scrollTop();
+                    this.$img.each(function (index, ele) {
+                        let $ele = $(ele)
+                        if ($ele.attr('lazy') === 'loaded') {
+                            return true
+                        }
+                        if (pos > $ele.offset().top) {
+                            $ele.attr('src', $ele.attr('data-src'))
+                            $ele.attr('lazy', 'loaded')
+                        }
+                    })
+                }
+                bindEvent() {
+                    let self = this
+                    $(window).on('scroll', function () {
+                        if (self.timer !== null) {
+                            clearTimeout(self.timer);
+                        }
+                        self.timer = setTimeout(() => {
+                            self.lazyImg()
+                        }, 100);
+                    })
+                }
+            }
+
+            new LazyLoad()
+        })
+    </script>
+</body>
+
+</html>
