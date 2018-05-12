@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <title>Tabs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .slide-con {
+            position: relative;
+            z-index: 1;
+            margin: 100px auto;
+            overflow: hidden;
+            display: block;
+            width: 800px;
+        }
+
+        .slide-wrap {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            box-sizing: content-box;
+        }
+
+        .slide-item {
+            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide-pagination-box {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 30px;
+            font-size: 0;
+            text-align: center;
+        }
+
+        .slide-dot {
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: top;
+            width: 8px;
+            height: 8px;
+            margin: 0 5px;
+            background: #ccc;
+            border-radius: 100%;
+        }
+
+        .slide-dot.active {
+            background: #007aff;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            vertical-align: top;
+        }
+
+        .prev-btn {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            margin-top: -30px;
+            width: 30px;
+            height: 60px;
+            line-height: 60px;
+            background: orangered;
+            color: #fff;
+            text-align: center;
+        }
+
+        .next-btn {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            right: 0;
+            margin-top: -30px;
+            width: 30px;
+            height: 60px;
+            line-height: 60px;
+            background: orangered;
+            color: #fff;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-con">
+        <div class="slide-wrap">
+            <div class="slide-item">
+                <img src="./img/img01.jpg" alt="">
+            </div>
+            <div class="slide-item">
+                <img src="./img/img02.jpg" alt="">
+            </div>
+            <div class="slide-item">
+                <img src="./img/img03.jpg" alt="">
+            </div>
+        </div>
+        <div class="slide-pagination-box"></div>
+        <div class="prev-btn">左</div>
+        <div class="next-btn">右</div>
+    </div>
+    <script>
+        $(function () {
+            class Slide {
+                /**
+                 * 基本用法和swiper 方法接口一样
+                 * @param {string|jq} 容器 
+                 * @param {any} 配置
+                 */
+                constructor(con, setting = {}) {
+                    this.$con = $(con)
+                    this.$item = this.$con.find('.slide-item')
+                    this.$wrap = this.$con.find('.slide-wrap')
+                    this.dot = null
+                    this.length = this.$item.length
+                    this.timer = null
+                    this.animate = false
+                    // 当前滑块
+                    this.current = 1
+                    this.width = this.$item.width()
+                    // 当前滑块对于的位移
+                    this.pos = -(this.current * this.width)
+                    this.setting = {
+                        prevButton: '',
+                        nextButton: '',
+                        autoplay: false,
+                        pagination: '.slide-pagination-box',
+                    }
+                    $.extend(this.setting, setting)
+                    this.init()
+                    this.bindEvent()
+                }
+                init() {
+                    let self = this
+                    let dotHtml = ''
+
+                    for (let i = 0; i < self.length; i++) {
+                        dotHtml += '<div class="slide-dot"></div>';
+                    }
+                    $(self.setting.pagination).html(dotHtml)
+                    self.dot = $(self.setting.pagination).find('.slide-dot')
+                    self.dot.eq(self.current - 1).addClass('active')
+
+                    self.$wrap.prepend(self.$item.last().clone())
+                    self.$wrap.append(self.$item.first().clone())
+
+                    self.$wrap.css({
+                        'transform': `translate3d(${self.pos}px, 0, 0)`
+                    })
+                }
+
+                bindEvent() {
+                    let self = this
+                    self.dot.on('click', function () {
+                        let index = $(this).index()
+                        self.current = index + 1
+                        self.pos = -(self.current * self.width)
+                        self.$wrap.css({
+                            'transition': 'transform 500ms',
+                            'transform': `translate3d(${self.pos}px, 0, 0)`
+                        })
+                        self.dot.removeClass('active').eq(self.current - 1).addClass('active');
+                    })
+                    self.$wrap.on('transitionend', function () {
+                        self.$wrap.css({
+                            'transition': 'none',
+                        })
+                        self.animate = false
+                    })
+                    $(self.setting.nextButton).on('click', function () {
+                        self.next()
+                    })
+                    $(self.setting.prevButton).on('click', function () {
+                        self.prev()
+                    })
+
+                    if (self.setting.autoplay) {
+                        self.autoplay()
+                    }
+                }
+
+                prev() {
+                    let self = this
+                    if (self.animate) {
+                        return
+                    }
+                    if (self.current === 1) {
+                        self.$wrap.css({
+                            'transition': 'transform 500ms',
+                            'transform': `translate3d(0px, 0, 0)`
+                        })
+                        self.animate = true
+                        self.current = self.length
+                        self.pos = -(self.current * self.width);
+                        setTimeout(function () {
+                            self.$wrap.css({
+                                'transform': `translate3d(${self.pos}px, 0, 0)`
+                            })
+                        }, 550)
+                    } else {
+                        self.current--
+                        self.pos = -(self.current * self.width);
+                        self.$wrap.css({
+                            'transition': 'transform 500ms',
+                            'transform': `translate3d(${self.pos}px, 0, 0)`
+                        })
+                        self.animate = true
+                    }
+                    self.dot.removeClass('active').eq(self.current - 1).addClass('active');
+                }
+
+                next() {
+                    let self = this
+                    if (self.animate) {
+                        return
+                    }
+                    if (self.current < self.length) {
+                        self.current++
+                        self.pos = -(self.current * self.width);
+                        self.$wrap.css({
+                            'transition': 'transform 500ms',
+                            'transform': `translate3d(${self.pos}px, 0, 0)`
+                        })
+                        self.animate = true
+                    } else {
+                        // 移动到最后一张
+                        self.current++
+                        self.pos = -(self.current * self.width);
+                        self.$wrap.css({
+                            'transition': 'transform 500ms',
+                            'transform': `translate3d(${self.pos}px, 0, 0)`
+                        })
+                        self.animate = true
+                        // 动画后定位到第一张
+                        self.current = 1
+                        self.pos = -(self.current * self.width);
+                        setTimeout(function () {
+                            self.$wrap.css({
+                                'transform': `translate3d(${self.pos}px, 0, 0)`
+                            })
+                        }, 550)
+                    }
+                    self.dot.removeClass('active').eq(self.current - 1).addClass('active');
+                }
+
+                autoplay() {
+                    let self = this
+                    self.timer = setInterval(function () {
+                        self.next()
+                    }, 3000)
+                }
+            }
+
+            let a = new Slide('.slide-con', {
+                prevButton: '.prev-btn',
+                nextButton: '.next-btn',
+                autoplay: false,
+            });
+
+            console.log(a)
+        })
+    </script>
+</body>
+
+</html>
